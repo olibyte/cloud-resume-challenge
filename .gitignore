@@ -1,0 +1,9 @@
+# .gitignore
+# /cloud-resume-challenge/.aws-sam
+# /cloud-resume-challenge/get-function
+# /cloud-resume-challenge/put-function
+# /cloud-resume-challenge/resume-oliver-bennett
+# samconfig.toml
+# template.yaml
+# Makefile
+# /.github/workflows
