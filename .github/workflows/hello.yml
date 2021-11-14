@@ -13,8 +13,7 @@ jobs:
     steps:
       - name: Hello World!
         run: echo "Hello World"
-  
-  test-infra:
+  unit-test-backend:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -26,9 +25,9 @@ jobs:
         run: cd cloud-resume-challenge/get-function && go test -v ./ && cd ../../
       - name: test put-function
         run: cd cloud-resume-challenge/put-function && go test -v ./ && cd ../../
-  
-  build-and-deploy-infra:
-    needs: test-infra
+
+  build-and-deploy-backend:
+    needs: unit-test-backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -43,8 +42,25 @@ jobs:
         working-directory: cloud-resume-challenge
       - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
         working-directory: cloud-resume-challenge
-  
-  deploy-site:
+
+  integration-test-backend:
+    needs: build-and-deploy-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd cloud-resume-challenge && make integration-test && cd ../../
+
+  end-to-end-test:
+    needs: integration-test-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: cd cloud-resume-challenge/end-to-end-test && npm install && node index.js
+
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -56,3 +72,45 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOURCE_DIR: cloud-resume-challenge/resume-oliver-bennett
+  # test-infra:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 2
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-go@v2.1.3
+  #       with:
+  #         go-version: ${{ env.GO_VERSION }}
+  #     - name: test get-function
+  #       run: cd cloud-resume-challenge/get-function && go test -v ./ && cd ../../
+  #     - name: test put-function
+  #       run: cd cloud-resume-challenge/put-function && go test -v ./ && cd ../../
+  
+  # build-and-deploy-infra:
+  #   needs: test-infra
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #     - uses: aws-actions/setup-sam@v1
+  #     - uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
+  #     - run: sam build
+  #       working-directory: cloud-resume-challenge
+  #     - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+  #       working-directory: cloud-resume-challenge
+  
+  # deploy-site:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: jakejarvis/s3-sync-action@master
+  #       with:
+  #         args: --delete
+  #       env:
+  #         AWS_S3_BUCKET: cloud-resume-challenge-website
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         SOURCE_DIR: cloud-resume-challenge/resume-oliver-bennett
