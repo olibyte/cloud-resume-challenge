@@ -58,7 +58,7 @@ Resources:
         Aliases:
           - oliverbennett.net
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: redirect-to-https
+          ViewerProtocolPolicy: allow-all
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           DefaultTTL: 0
           MinTTL: 0
