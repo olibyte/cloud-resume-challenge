@@ -56,15 +56,30 @@ Resources:
             AcmCertificateArn: !Ref MyCertificate
             SslSupportMethod: sni-only
         Aliases:
-          - oliverbennett.net
+        - oliverbennett.net
         DefaultCacheBehavior:
           ViewerProtocolPolicy: allow-all
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          DefaultTTL: 0
-          MinTTL: 0
-          MaxTTL: 0
+          MinTTL: '100'
+          SmoothStreaming: 'true'
+          # DefaultTTL: 0
+          # MinTTL: 0
+          # MaxTTL: 0
           ForwardedValues:
             QueryString: false
+            Cookies:
+              Forward: all
+        CacheBehaviors:
+          - AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
+            ViewerProtocolPolicy: allow-all
+            MinTTL: '50'
         Origins:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
