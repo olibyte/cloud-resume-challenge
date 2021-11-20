@@ -52,34 +52,6 @@ Resources:
     Type: "AWS::CloudFront::Distribution"
     Properties:
       DistributionConfig:
-        ViewerCertificate:
-            AcmCertificateArn: !Ref MyCertificate
-            SslSupportMethod: sni-only
-        Aliases:
-        - oliverbennett.net
-        DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
-          TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          MinTTL: '100'
-          SmoothStreaming: 'true'
-          # DefaultTTL: 0
-          # MinTTL: 0
-          # MaxTTL: 0
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: all
-        CacheBehaviors:
-          - AllowedMethods:
-              - DELETE
-              - GET
-              - HEAD
-              - OPTIONS
-              - PATCH
-              - POST
-              - PUT
-            ViewerProtocolPolicy: allow-all
-            MinTTL: '50'
         Origins:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
@@ -87,7 +59,35 @@ Resources:
               OriginProtocolPolicy: match-viewer
         Enabled: "true"
         DefaultRootObject: index.html
-
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: 'true'
+            # AcmCertificateArn: !Ref MyCertificate
+            # SslSupportMethod: sni-only
+        Aliases:
+        - oliverbennett.net
+        DefaultCacheBehavior:
+          ViewerProtocolPolicy: allow-all
+          TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
+          MinTTL: 100
+          SmoothStreaming: 'true'
+          DefaultTTL: 0
+          # MinTTL: 0
+          # MaxTTL: 0
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: all
+        # CacheBehaviors:
+          # - AllowedMethods:
+              # - DELETE
+              # - GET
+              # - HEAD
+              # - OPTIONS
+              # - PATCH
+              # - POST
+              # - PUT
+            # ViewerProtocolPolicy: allow-all
+            # MinTTL: '50'
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
