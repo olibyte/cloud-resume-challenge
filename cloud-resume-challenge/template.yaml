@@ -53,16 +53,19 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-            Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
+          - Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
+            DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             CustomOriginConfig:
-              OriginProtocolPolicy: match-viewer
+            HTTPPort: '80'
+            HTTPSPort: '443'
+            OriginProtocolPolicy: http-only
+              # OriginProtocolPolicy: match-viewer
         Enabled: "true"
         DefaultRootObject: index.html
         ViewerCertificate:
-          CloudFrontDefaultCertificate: 'true'
-            # AcmCertificateArn: !Ref MyCertificate
-            # SslSupportMethod: sni-only
+          # CloudFrontDefaultCertificate: 'true'
+            AcmCertificateArn: !Ref MyCertificate
+            SslSupportMethod: sni-only
         Aliases:
         - oliverbennett.net
         DefaultCacheBehavior:
@@ -70,7 +73,7 @@ Resources:
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           MinTTL: 100
           SmoothStreaming: 'true'
-          DefaultTTL: 0
+          # DefaultTTL: 0
           # MinTTL: 0
           # MaxTTL: 0
           ForwardedValues:
