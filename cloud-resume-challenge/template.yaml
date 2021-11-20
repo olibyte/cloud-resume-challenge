@@ -52,45 +52,27 @@ Resources:
     Type: "AWS::CloudFront::Distribution"
     Properties:
       DistributionConfig:
-        Origins:
-          - Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-            DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-            CustomOriginConfig:
-            HTTPPort: '80'
-            HTTPSPort: '443'
-            OriginProtocolPolicy: http-only
-              # OriginProtocolPolicy: match-viewer
-        Enabled: "true"
-        DefaultRootObject: index.html
         ViewerCertificate:
-          # CloudFrontDefaultCertificate: 'true'
             AcmCertificateArn: !Ref MyCertificate
             SslSupportMethod: sni-only
         Aliases:
-        - oliverbennett.net
+          - oliverbennett.net
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          MinTTL: 100
-          SmoothStreaming: 'true'
-          # DefaultTTL: 0
-          # MinTTL: 0
-          # MaxTTL: 0
+          DefaultTTL: 0
+          MinTTL: 0
+          MaxTTL: 0
           ForwardedValues:
             QueryString: false
-            Cookies:
-              Forward: all
-        # CacheBehaviors:
-          # - AllowedMethods:
-              # - DELETE
-              # - GET
-              # - HEAD
-              # - OPTIONS
-              # - PATCH
-              # - POST
-              # - PUT
-            # ViewerProtocolPolicy: allow-all
-            # MinTTL: '50'
+        Origins:
+          - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
+            Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
+            CustomOriginConfig:
+              OriginProtocolPolicy: match-viewer
+        Enabled: "true"
+        DefaultRootObject: index.html
+
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
