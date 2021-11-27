@@ -56,13 +56,25 @@ Resources:
         Aliases:
         - oliverbennett.net
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: redirect-to-https
+          ViewerProtocolPolicy: allow-all
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          DefaultTTL: 0
+          Compress: true
           MinTTL: 0
-          MaxTTL: 0
+          DefaultTTL: 3600
+          MaxTTL: 31536000
+          AllowedMethods:
+          - GET
+          - HEAD
+          CachedMethods:
+          - GET
+          - HEAD
           ForwardedValues:
-            QueryString: false
+            QueryString: 'false'
+            Headers:
+            - Origin
+            - CloudFront-Viewer-Country
+            Cookies:
+              Forward: none
         Origins:
         - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
