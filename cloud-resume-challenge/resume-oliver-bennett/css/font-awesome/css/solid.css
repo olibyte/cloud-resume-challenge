@@ -7,8 +7,8 @@
   font-style: normal;
   font-weight: 900;
   font-display: block;
-  src: url("../webfonts/fa-solid-900.eot");
-  src: url("../webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("../webfonts/fa-solid-900.woff2") format("woff2"), url("../webfonts/fa-solid-900.woff") format("woff"), url("../webfonts/fa-solid-900.ttf") format("truetype"), url("../webfonts/fa-solid-900.svg#fontawesome") format("svg"); }
+  src: url("https://cloud-resume-challenge-website.s3.amazonaws.com/font-awesome/webfonts/fa-solid-900.eot");
+  src: url("https://cloud-resume-challenge-website.s3.amazonaws.com/font-awesome/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("https://cloud-resume-challenge-website.s3.amazonaws.com/font-awesome/webfonts/fa-solid-900.woff2") format("woff2"), url("https://cloud-resume-challenge-website.s3.amazonaws.com/font-awesome/webfonts/fa-solid-900.woff") format("woff"), url("https://cloud-resume-challenge-website.s3.amazonaws.com/font-awesome/webfonts/fa-solid-900.ttf") format("truetype"), url("https://cloud-resume-challenge-website.s3.amazonaws.com/font-awesome/webfonts/fa-solid-900.svg#fontawesome") format("svg"); }
 
 .fa,
 .fas {
