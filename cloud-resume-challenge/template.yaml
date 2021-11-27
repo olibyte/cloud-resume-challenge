@@ -22,6 +22,8 @@ Resources:
               - '*'
             AllowedMethods:
               - GET
+              - HEAD
+              - OPTIONS
             AllowedOrigins:
               - '*'
             ExposedHeaders:
@@ -70,7 +72,7 @@ Resources:
         Aliases:
           - oliverbennett.net
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Compress: true
           MinTTL: 0
@@ -79,14 +81,18 @@ Resources:
           AllowedMethods:
             - GET
             - HEAD
+            - OPTIONS
           CachedMethods:
             - GET
             - HEAD
+            - OPTIONS
           ForwardedValues:
             QueryString: 'false'
             Headers:
               - Origin
               - CloudFront-Viewer-Country
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
             Cookies:
               Forward: none
           # DefaultTTL: 0
