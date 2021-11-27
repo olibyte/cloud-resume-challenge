@@ -23,6 +23,7 @@ Resources:
             AllowedMethods:
               - GET
               - HEAD
+              - OPTIONS
             AllowedOrigins:
               - '*'
             ExposedHeaders:
@@ -89,7 +90,6 @@ Resources:
             QueryString: 'false'
             Headers:
               - Origin
-              - CloudFront-Viewer-Country
               - Access-Control-Request-Headers
               - Access-Control-Request-Method
             Cookies:
