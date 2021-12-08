@@ -93,11 +93,6 @@ Resources:
               - Access-Control-Request-Method
             Cookies:
               Forward: none
-          # DefaultTTL: 0
-          # MinTTL: 0
-          # MaxTTL: 0
-          # ForwardedValues:
-            # QueryString: false
         Origins:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
