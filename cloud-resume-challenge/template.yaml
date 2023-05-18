@@ -71,7 +71,7 @@ Resources:
         Aliases:
           - oliverbennett.net
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Compress: true
           MinTTL: 0
@@ -86,7 +86,7 @@ Resources:
             - HEAD
             - OPTIONS
           ForwardedValues:
-            QueryString: 'false'
+            QueryString: false
             Headers:
               - Origin
               - Access-Control-Request-Headers
@@ -98,7 +98,7 @@ Resources:
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             CustomOriginConfig:
               OriginProtocolPolicy: match-viewer
-        Enabled: "true"
+        Enabled: true
         DefaultRootObject: index.html
 
   BucketPolicy:
