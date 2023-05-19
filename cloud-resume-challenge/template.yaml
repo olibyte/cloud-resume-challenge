@@ -23,7 +23,6 @@ Resources:
             AllowedMethods:
               - GET
               - HEAD
-              - PUT
             AllowedOrigins:
               - '*'
             ExposedHeaders:
@@ -82,10 +81,6 @@ Resources:
             - GET
             - HEAD
             - OPTIONS
-            - PUT
-            - POST
-            - PATCH
-            - DELETE
           CachedMethods:
             - GET
             - HEAD
