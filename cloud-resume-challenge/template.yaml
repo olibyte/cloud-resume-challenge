@@ -31,7 +31,16 @@ Resources:
       KeySchema:
         - AttributeName: "ID"
           KeyType: "HASH"
-
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties: 
+      OriginAccessControlConfig: 
+        Description: "Default Origin Access Control"
+        Name: !Ref AWS::StackName
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always 
+        SigningProtocol: sigv4 
+    
   MyRoute53Record:
     Type: "AWS::Route53::RecordSetGroup"
     Properties:
@@ -66,10 +75,6 @@ Resources:
           MaxTTL: 0
           ForwardedValues:
             QueryString: false
-            Headers:
-              - Origin
-              - Access-Control-Request-Headers
-              - Access-Control-Request-Method
             Cookies:
               Forward: none
         Origins:
