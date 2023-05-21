@@ -16,19 +16,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: PublicRead
-      CorsConfiguration:
-        CorsRules:
-          - AllowedHeaders:
-              - '*'
-            AllowedMethods:
-              - GET
-              - HEAD
-            AllowedOrigins:
-              - '*'
-            ExposedHeaders:
-              - Date
-            Id: myCORSRuleId1
-            MaxAge: 3600
       WebsiteConfiguration:
         IndexDocument: index.html
       BucketName: cloud-resume-challenge-website
@@ -71,20 +58,12 @@ Resources:
         Aliases:
           - oliverbennett.net
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Compress: true
           MinTTL: 0
           DefaultTTL: 0
           MaxTTL: 0
-          AllowedMethods:
-            - GET
-            - HEAD
-            - OPTIONS
-          CachedMethods:
-            - GET
-            - HEAD
-            - OPTIONS
           ForwardedValues:
             QueryString: false
             Headers:
