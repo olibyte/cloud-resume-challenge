@@ -82,8 +82,7 @@ Resources:
             AcmCertificateArn: arn:aws:acm:us-east-1:634159314720:certificate/0731a31d-45b6-464f-8fca-0a093f3d3cf4
             SslSupportMethod: sni-only
             MinimumProtocolVersion: TLSv1
-        Aliases:
-          - !Split [",", !Join ["", [!Ref WebsiteDomainNameParameter, !Ref DomainNameParameter],],]
+        Aliases: !Split [",", !Join ["", [!Ref WebsiteDomainNameParameter, !Ref DomainNameParameter],],]
         DefaultCacheBehavior:
           ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
