@@ -10,6 +10,24 @@ Globals:
   Function:
     Timeout: 5
 
+Parameters:
+  HostedZoneParameter:
+    Type: String
+    Description: The hosted zone for the Route53 records
+    Default: Z08034563UEGXHOK8DP5Y
+  DomainNameParameter:
+    Type: String
+    Description: The domain name of the site
+    Default: oliverbennett.net
+  ApiDomainNameParameter:
+    Type: String
+    Description: The subdomain of the API
+    Default: "api."
+  WebsiteDomainNameParameter:
+    Type: String
+    Description: The subdomain of the API
+    Default: "website."
+
 Resources:
 
   MyWebsite:
@@ -35,9 +53,10 @@ Resources:
   MyRoute53Record:
     Type: "AWS::Route53::RecordSetGroup"
     Properties:
-      HostedZoneId: Z08034563UEGXHOK8DP5Y # TODO: Don't hardcode me
+      HostedZoneId:
+        Ref: HostedZoneParameter
       RecordSets:
-        - Name: oliverbennett.net # TODO: Don't hardcode me
+        - Name: !Join ["", [!Ref WebsiteDomainNameParameter, !Ref DomainNameParameter]]
           Type: A
           AliasTarget:
             HostedZoneId: Z2FDTNDATAQYW2
@@ -45,7 +64,14 @@ Resources:
   MyCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: oliverbennett.net # TODO: Don't hardcode me
+      DomainName: !Join ["", ["*.", !Ref DomainNameParameter]]
+      SubjectAlternativeNames:
+        - !Ref DomainNameParameter
+        - !Join ["", ["*.", !Ref DomainNameParameter]]
+      DomainValidationOptions:
+        - DomainName: !Ref DomainNameParameter
+          HostedZoneId:
+            Ref: HostedZoneParameter
       ValidationMethod: DNS
 
   MyDistribution:
@@ -53,21 +79,19 @@ Resources:
     Properties:
       DistributionConfig:
         ViewerCertificate:
-            AcmCertificateArn: !Ref MyCertificate
+            AcmCertificateArn: arn:aws:acm:us-east-1:634159314720:certificate/0731a31d-45b6-464f-8fca-0a093f3d3cf4
             SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1
         Aliases:
-          - oliverbennett.net
+          - !Split [",", !Join ["", [!Ref WebsiteDomainNameParameter, !Ref DomainNameParameter],],]
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          Compress: true
-          MinTTL: 0
           DefaultTTL: 0
+          MinTTL: 0
           MaxTTL: 0
           ForwardedValues:
             QueryString: false
-            Cookies:
-              Forward: none
         Origins:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
@@ -87,12 +111,18 @@ Resources:
             Effect: Allow
             Principal: "*"
             Action: "s3:GetObject"
-            Resource: !Join
-              - ""
-              - - "arn:aws:s3:::"
-                - !Ref MyWebsite
-                - /*
-      Bucket: !Ref MyWebsite   
+            Resource: !Join ["", ["arn:aws:s3:::", !Ref MyWebsite, "/*"]]
+      Bucket: !Ref MyWebsite
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Domain:
+        DomainName: !Join ["", [!Ref ApiDomainNameParameter, !Ref DomainNameParameter]]
+        CertificateArn: !Ref MyCertificate
+        Route53:
+          HostedZoneId:
+            Ref: HostedZoneParameter
 
   GetFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -112,6 +142,7 @@ Resources:
           Properties:
             Path: /get
             Method: GET
+            RestApiId: ApiGatewayApi
       # Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         # Variables:
           # PARAM1: VALUE
@@ -134,6 +165,7 @@ Resources:
           Properties:
             Path: /put
             Method: GET
+            RestApiId: ApiGatewayApi
       # Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         # Variables:
           # PARAM1: VALUE
