@@ -57,7 +57,7 @@ Resources:
         Ref: HostedZoneParameter
       RecordSets:
         - Name: !Join ["", [!Ref WebsiteDomainNameParameter, !Ref DomainNameParameter]]
-          Type: A
+          Type: "A"
           AliasTarget:
             HostedZoneId: Z2FDTNDATAQYW2
             DNSName: !GetAtt MyDistribution.DomainName
@@ -96,6 +96,8 @@ Resources:
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             CustomOriginConfig:
               OriginProtocolPolicy: match-viewer
+              HTTPPort: 80
+              HTTPSPort: 443
         Enabled: true
         DefaultRootObject: index.html
 
