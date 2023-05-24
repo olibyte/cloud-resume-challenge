@@ -8,24 +8,28 @@ Description: 'cloud-resume-challenge
 Globals:
   Function:
     Timeout: 5
+Parameters:
+  HostedZoneParameter:
+    Type: String
+    Description: The hosted zone for the Route53 records
+    Default: Z08034563UEGXHOK8DP5Y
+  DomainNameParameter:
+    Type: String
+    Description: The domain name of the site
+    Default: oliverbennett.net
+  ApiDomainNameParameter:
+    Type: String
+    Description: The subdomain of the API
+    Default: api.
+  WebsiteDomainNameParameter:
+    Type: String
+    Description: The subdomain of the API
+    Default: website.
 Resources:
   MyWebsite:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: PublicRead
-      CorsConfiguration:
-        CorsRules:
-        - AllowedHeaders:
-          - '*'
-          AllowedMethods:
-          - GET
-          - HEAD
-          AllowedOrigins:
-          - '*'
-          ExposedHeaders:
-          - Date
-          Id: myCORSRuleId1
-          MaxAge: 3600
       WebsiteConfiguration:
         IndexDocument: index.html
       BucketName: cloud-resume-challenge-website
@@ -43,9 +47,14 @@ Resources:
   MyRoute53Record:
     Type: AWS::Route53::RecordSetGroup
     Properties:
-      HostedZoneId: Z08034563UEGXHOK8DP5Y
+      HostedZoneId:
+        Ref: HostedZoneParameter
       RecordSets:
-      - Name: oliverbennett.net
+      - Name:
+          Fn::Join:
+          - ''
+          - - Ref: WebsiteDomainNameParameter
+            - Ref: DomainNameParameter
         Type: A
         AliasTarget:
           HostedZoneId: Z2FDTNDATAQYW2
@@ -56,7 +65,22 @@ Resources:
   MyCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
-      DomainName: oliverbennett.net
+      DomainName:
+        Fn::Join:
+        - ''
+        - - '*.'
+          - Ref: DomainNameParameter
+      SubjectAlternativeNames:
+      - Ref: DomainNameParameter
+      - Fn::Join:
+        - ''
+        - - '*.'
+          - Ref: DomainNameParameter
+      DomainValidationOptions:
+      - DomainName:
+          Ref: DomainNameParameter
+        HostedZoneId:
+          Ref: HostedZoneParameter
       ValidationMethod: DNS
   MyDistribution:
     Type: AWS::CloudFront::Distribution
@@ -66,37 +90,30 @@ Resources:
           AcmCertificateArn:
             Ref: MyCertificate
           SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1
         Aliases:
-        - oliverbennett.net
+          Fn::Split:
+          - ','
+          - Fn::Join:
+            - ''
+            - - Ref: WebsiteDomainNameParameter
+              - Ref: DomainNameParameter
         DefaultCacheBehavior:
           ViewerProtocolPolicy: allow-all
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          Compress: true
-          MinTTL: 0
           DefaultTTL: 0
+          MinTTL: 0
           MaxTTL: 0
-          AllowedMethods:
-          - GET
-          - HEAD
-          - OPTIONS
-          CachedMethods:
-          - GET
-          - HEAD
-          - OPTIONS
           ForwardedValues:
-            QueryString: 'false'
-            Headers:
-            - Origin
-            - Access-Control-Request-Headers
-            - Access-Control-Request-Method
-            Cookies:
-              Forward: none
+            QueryString: false
         Origins:
         - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           CustomOriginConfig:
             OriginProtocolPolicy: match-viewer
-        Enabled: 'true'
+            HTTPPort: 80
+            HTTPSPort: 443
+        Enabled: true
         DefaultRootObject: index.html
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -117,6 +134,21 @@ Resources:
               - /*
       Bucket:
         Ref: MyWebsite
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Domain:
+        DomainName:
+          Fn::Join:
+          - ''
+          - - Ref: ApiDomainNameParameter
+            - Ref: DomainNameParameter
+        CertificateArn:
+          Ref: MyCertificate
+        Route53:
+          HostedZoneId:
+            Ref: HostedZoneParameter
   GetFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -135,6 +167,7 @@ Resources:
           Properties:
             Path: /get
             Method: GET
+            RestApiId: ApiGatewayApi
   PutFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -153,3 +186,4 @@ Resources:
           Properties:
             Path: /put
             Method: GET
+            RestApiId: ApiGatewayApi
