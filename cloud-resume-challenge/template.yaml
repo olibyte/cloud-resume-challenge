@@ -111,7 +111,7 @@ Resources:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             CustomOriginConfig:
-              OriginProtocolPolicy: match-viewer
+              OriginProtocolPolicy: https-only
               HTTPPort: 80
               HTTPSPort: 443
         Enabled: true
