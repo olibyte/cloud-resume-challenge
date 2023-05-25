@@ -29,6 +29,18 @@ Resources:
   MyWebsite:
     Type: AWS::S3::Bucket
     Properties:
+      CorsConfiguration:
+        CorsRules:
+        - AllowedHeaders:
+          - '*'
+          AllowedMethods:
+          - GET
+          - PUT
+          - POST
+          - DELETE
+          - HEAD
+          AllowedOrigins:
+          - '*'
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -99,13 +111,14 @@ Resources:
             - - Ref: WebsiteDomainNameParameter
               - Ref: DomainNameParameter
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          DefaultTTL: 0
-          MinTTL: 0
-          MaxTTL: 0
-          ForwardedValues:
-            QueryString: false
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf
         Origins:
         - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com

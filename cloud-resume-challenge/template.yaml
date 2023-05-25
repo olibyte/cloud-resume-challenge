@@ -33,7 +33,20 @@ Resources:
   MyWebsite:
     Type: AWS::S3::Bucket
     Properties:
+      CorsConfiguration:
+        CorsRules:
+        - AllowedHeaders:
+            - "*"
+          AllowedMethods:
+            - GET
+            - PUT
+            - POST
+            - DELETE
+            - HEAD
+          AllowedOrigins:
+            - "*"
       AccessControl: PublicRead
+      # add corsconfiguration? https://github.com/aws-samples/aws-serverless-workshop-innovator-island/blob/7a995e2d214021d7b98c96829ebdcdd858ca7173/1-app-deploy/sam-app/template.yaml#L81
       WebsiteConfiguration:
         IndexDocument: index.html
       BucketName: cloud-resume-challenge-website
@@ -84,13 +97,15 @@ Resources:
             MinimumProtocolVersion: TLSv1
         Aliases: !Split [",", !Join ["", [!Ref WebsiteDomainNameParameter, !Ref DomainNameParameter],],]
         DefaultCacheBehavior:
-          ViewerProtocolPolicy: allow-all
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          ViewerProtocolPolicy: redirect-to-https
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          DefaultTTL: 0
-          MinTTL: 0
-          MaxTTL: 0
-          ForwardedValues:
-            QueryString: false
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf # CORS-S3Origin
+
         Origins:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
