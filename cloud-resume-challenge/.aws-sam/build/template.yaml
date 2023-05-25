@@ -35,12 +35,13 @@ Resources:
           - '*'
           AllowedMethods:
           - GET
-          - PUT
-          - POST
-          - DELETE
           - HEAD
           AllowedOrigins:
           - '*'
+          ExposedHeaders:
+          - Date
+          Id: myCORSRuleId
+          MaxAge: 3600
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -180,7 +181,8 @@ Resources:
           Properties:
             Path: /get
             Method: GET
-            RestApiId: ApiGatewayApi
+            RestApiId:
+              Ref: ApiGatewayApi
   PutFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -199,4 +201,5 @@ Resources:
           Properties:
             Path: /put
             Method: GET
-            RestApiId: ApiGatewayApi
+            RestApiId:
+              Ref: ApiGatewayApi
