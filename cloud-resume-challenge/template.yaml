@@ -14,11 +14,11 @@ Parameters:
   HostedZoneParameter:
     Type: String
     Description: The hosted zone for the Route53 records
-    Default: Z023209490HZZNCNOOK1
+    Default: Z08034563UEGXHOK8DP5Y
   DomainNameParameter:
     Type: String
     Description: The domain name of the site
-    Default: flutterbeam.io
+    Default: oliverbennett.net
   ApiDomainNameParameter:
     Type: String
     Description: The subdomain of the API
