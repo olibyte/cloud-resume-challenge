@@ -116,6 +116,7 @@ Resources:
           TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
           OriginRequestPolicyId: 59781a5b-3903-41f3-afcb-af62929ccde1
+          ResponseHeadersPolicyId: 60669652-455b-4ae9-85a4-c4c02393f86c
         Origins:
         - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
           Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
