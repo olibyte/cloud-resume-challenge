@@ -25,14 +25,13 @@ Parameters:
     Default: "api."
   WebsiteDomainNameParameter:
     Type: String
-    Description: The subdomain of the API
+    Description: The subdomain of the website
     Default: "website."
   ResumeDomainNameParameter:
     Type: String
-    Description: The subdomain of the API
+    Description: The subdomain of the resume-site
     Default: "resume."
 Resources:
-
   MyWebsite:
     Type: AWS::S3::Bucket
     Properties:
@@ -54,24 +53,10 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
       BucketName: cloud-resume-challenge-website
-
-  DynamoDBTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: cloud-resume-challenge
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: "ID"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "ID"
-          KeyType: "HASH"
-    
   MyRoute53Record:
     Type: "AWS::Route53::RecordSetGroup"
     Properties:
-      HostedZoneId:
-        Ref: HostedZoneParameter
+      HostedZoneId: Z08034563UEGXHOK8DP5Y
       RecordSets:
         - Name: !Join ["", [!Ref ResumeDomainNameParameter, !Ref DomainNameParameter]]
           Type: "A"
@@ -90,7 +75,6 @@ Resources:
           HostedZoneId:
             Ref: HostedZoneParameter
       ValidationMethod: DNS
-
   MyDistribution:
     Type: "AWS::CloudFront::Distribution"
     Properties:
@@ -101,7 +85,7 @@ Resources:
             MinimumProtocolVersion: TLSv1
         Aliases: !Split [",", !Join ["", [!Ref ResumeDomainNameParameter, !Ref DomainNameParameter],],]
         DefaultCacheBehavior:
-          AllowedMethods:
+            AllowedMethods:
             - GET
             - HEAD
             - OPTIONS
@@ -109,21 +93,20 @@ Resources:
             - PATCH
             - POST
             - DELETE
-          ViewerProtocolPolicy: redirect-to-https
-          TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
-          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
-          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf # CORS-S3Origin
-
+            ViewerProtocolPolicy: redirect-to-https
+            TargetOriginId: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+            OriginRequestPolicyId: 59781a5b-3903-41f3-afcb-af62929ccde1 #CORS-CustomOrigin
+            # OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf # CORS-S3Origin
         Origins:
           - DomainName: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             Id: cloud-resume-challenge-website.s3-website-us-east-1.amazonaws.com
             CustomOriginConfig:
-              OriginProtocolPolicy: https-only
+              OriginProtocolPolicy: match-viewer
               HTTPPort: 80
               HTTPSPort: 443
         Enabled: true
         DefaultRootObject: index.html
-
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -137,6 +120,17 @@ Resources:
             Action: "s3:GetObject"
             Resource: !Join ["", ["arn:aws:s3:::", !Ref MyWebsite, "/*"]]
       Bucket: !Ref MyWebsite
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: cloud-resume-challenge
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: "ID"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "ID"
+          KeyType: "HASH"  
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -147,7 +141,6 @@ Resources:
         Route53:
           HostedZoneId:
             Ref: HostedZoneParameter
-
   GetFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -171,7 +164,6 @@ Resources:
       # Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         # Variables:
           # PARAM1: VALUE
-
   PutFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
